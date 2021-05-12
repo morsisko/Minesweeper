@@ -24,7 +24,7 @@ class Field:
         return self._mines_nearby
         
     def isClosed(self):
-        return self._state == Field.CLOSED_STATE
+        return self._state == Field.CLOSED_STATE or self._state == Field.FLAGGED_STATE or self._state == Field.MAYBE_STATE
         
     def isOpened(self):
         return self._state == Field.OPENED_STATE
@@ -32,8 +32,14 @@ class Field:
     def isMarked(self):
         return self._state == Field.FLAGGED_STATE or self._state == Field.MAYBE_STATE
         
+    def isFlagged(self):
+        return self._state == Field.FLAGGED_STATE
+        
+    def isMaybeMine(self):
+        return self._state == Field.MAYBE_STATE
+        
     def onRightClick(self):
-        if not self.isClosed():
+        if self.isOpened():
             return
             
         elif self._state == Field.CLOSED_STATE:

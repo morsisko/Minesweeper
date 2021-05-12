@@ -32,9 +32,21 @@ class Game:
                     
         if closedFields == self._board.getMineCount():
             self._state = Game.WON
+            
+    def rightClick(self, x, y):
+        if x < 0 or y < 0 or x >= self._board.getWidth() or y >= self._board.getHeight():
+            return
+            
+        field = self._board.getField(x, y)
+        
+        field.onRightClick()
+        
                     
         
     def leftClick(self, x, y):
+        if x < 0 or y < 0 or x >= self._board.getWidth() or y >= self._board.getHeight():
+            return
+    
         if self._state == Game.WAITING:
             self._state = Game.STARTED
             self._board.initBoard(x, y)
@@ -60,3 +72,6 @@ class Game:
 
     def isLost(self):
         return self._state == Game.LOST
+        
+    def getField(self, x, y):
+        return self._board.getField(x, y)

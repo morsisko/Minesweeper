@@ -66,6 +66,7 @@ class Board:
         
         for i in range(self._mines):
             x, y = positions[i]
+            print(x, y)
             self._board[y][x].putMine()
             
         self._countNearbyMines()
