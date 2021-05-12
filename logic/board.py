@@ -11,6 +11,15 @@ class Board:
         
         self._createBoard()
         
+    def getWidth(self):
+        return self._width
+        
+    def getHeight(self):
+        return self._height
+        
+    def getMineCount(self):
+        return self._mines
+        
     def _createBoard(self):
         for y in range(self._height):
             self._board.append([])
@@ -21,7 +30,7 @@ class Board:
         for y in range(self._height + 1):
             for x in range(self._width + 1):
                 if x == 0 and y == 0:
-                    print("x/y", end="")
+                    print("y/x", end="")
                     
                 elif y == 0:
                     print(x, end="")
@@ -41,6 +50,7 @@ class Board:
                 print("\t", end="")
                 
             print("")
+            
                 
     def initBoard(self, excludeX, excludeY):
         self._putMines(excludeX, excludeY)
@@ -50,7 +60,7 @@ class Board:
         for y in range(self._height):
             for x in range(self._width):
                 if x != excludeX and y != excludeY:
-                    board.append((x, y))
+                    positions.append((x, y))
                     
         random.shuffle(positions)
         
@@ -64,19 +74,21 @@ class Board:
         for y in range(self._height):
             for x in range(self._width):
                 currentCount = 0
-                for dirX, dirY in DIRECTIONS:
+                for dirX, dirY in Board.DIRECTIONS:
                     newX = x + dirX
                     newY = y + dirY
                     
                     if newX < 0 or newY < 0 or newX >= self._width or newY >= self._height:
                         continue
                         
-                    currentCount += 1
+                    if self._board[newY][newX].isMine():
+                        currentCount += 1
                     
                 self._board[y][x].setMinesNearby(currentCount)
                 
     def openField(self, x, y):
-        field = self._board[y][x]
+        field = self.getField(x, y)
+        
         if field.isOpened():
             return
             
@@ -93,7 +105,7 @@ class Board:
                
         field.open()
             
-        for dirX, dirY in DIRECTIONS:
+        for dirX, dirY in Board.DIRECTIONS:
             newX = x + dirX
             newY = y + dirY
             
@@ -101,3 +113,6 @@ class Board:
                 continue
                 
             self.openField(newX, newY)
+            
+    def getField(self, x, y):
+        return self._board[y][x]
