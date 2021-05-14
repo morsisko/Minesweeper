@@ -11,6 +11,9 @@ class Field:
         self._is_mine = False
         self._state = Field.CLOSED_STATE
         
+    def __eq__(self, other):
+        return self._x == other._x and self._y == other._y
+        
     def putMine(self):
         self._is_mine = True
         

@@ -9,6 +9,7 @@ class Game:
     def __init__(self, width, height, mines):
         self._board = Board(width, height, mines)
         self._state = Game.WAITING
+        self._lastOpenedField = None
         
     def _checkGameState(self):
         if self._state != Game.STARTED:
@@ -38,7 +39,6 @@ class Game:
             return
             
         field = self._board.getField(x, y)
-        
         field.onRightClick()
         
                     
@@ -55,6 +55,7 @@ class Game:
             return
             
         self._board.openField(x, y)
+        self._lastOpenedField = self._board.getField(x, y)
         
         self._checkGameState()
         
@@ -75,3 +76,6 @@ class Game:
         
     def getField(self, x, y):
         return self._board.getField(x, y)
+        
+    def getLastOpenedField(self):
+        return self._lastOpenedField
