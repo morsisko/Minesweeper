@@ -16,12 +16,12 @@ class Game:
             return
             
         closedFields = 0
-        openedFields = 0
+        minesMarkedCorrectly = 0
         for y in range(self._board.getHeight()):
             for x in range(self._board.getWidth()):
                 field = self._board.getField(x, y)
-                if field.isOpened():
-                    openedFields += 1
+                if field.isMine() and field.isFlagged():
+                    minesMarkedCorrectly += 1
                     
                 if field.isClosed():
                     closedFields += 1
@@ -31,8 +31,14 @@ class Game:
                     return
                     
                     
-        if closedFields == self._board.getMineCount():
+        if closedFields == self._board.getMineCount() or minesMarkedCorrectly == self._board.getMineCount():
             self._state = Game.WON
+            
+        if self._state == Game.WON:
+            print("Zwyciestwo")
+            
+        elif self._state == Game.LOST:
+            print("Porazka")
             
     def rightClick(self, x, y):
         if x < 0 or y < 0 or x >= self._board.getWidth() or y >= self._board.getHeight():
@@ -41,7 +47,7 @@ class Game:
         field = self._board.getField(x, y)
         field.onRightClick()
         
-                    
+        self._checkGameState()  
         
     def leftClick(self, x, y):
         if x < 0 or y < 0 or x >= self._board.getWidth() or y >= self._board.getHeight():
@@ -58,12 +64,6 @@ class Game:
         self._lastOpenedField = self._board.getField(x, y)
         
         self._checkGameState()
-        
-        if self._state == Game.WON:
-            print("Zwyciestwo")
-            
-        elif self._state == Game.LOST:
-            print("Porazka")
             
     def isEnd(self):
         return self._state == Game.WON or self._state == Game.LOST
