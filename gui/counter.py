@@ -1,6 +1,7 @@
 import pygame
 class Counter:
     WIDTH = 13
+    HEIGHT = 26
     TEXTURES = [pygame.image.load('assets/counter_{}.png'.format(i)) for i in range(10)]
     def __init__(self, x, y, digits):
         self._x = x

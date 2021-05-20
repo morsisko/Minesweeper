@@ -30,7 +30,8 @@ class GameScene(AbstractScene):
     wonButtonTexture = pygame.image.load('assets/won.png')
     
     def startNewGame(self):
-        self._sceneManager.setScene(GameScene(self._sceneManager, self._x, self._y, self._mines))
+        from gui.menuscene import MenuScene
+        self._sceneManager.setScene(MenuScene(self._sceneManager, self._x, self._y, self._mines))
     
     def __init__(self, sceneManager, x, y, mines):
         super().__init__(sceneManager)
