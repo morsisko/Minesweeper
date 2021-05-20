@@ -14,6 +14,15 @@ class Game:
         self._gameStartedTimestamp = 0
         self._gameEndedTimestamp = 0
         
+    def _doActionBasingOnGameState(self):            
+        if self._state == Game.WON:
+            self._gameEndedTimestamp = int(time.time() * 1000)
+            print("Zwyciestwo")
+            
+        elif self._state == Game.LOST:
+            self._gameEndedTimestamp = int(time.time() * 1000)
+            print("Porazka")
+        
     def _checkGameState(self):
         if self._state != Game.STARTED:
             return
@@ -31,19 +40,13 @@ class Game:
                     
                 if field.isOpened() and field.isMine():
                     self._state = Game.LOST
+                    self._doActionBasingOnGameState()
                     return
-                    
                     
         if closedFields == self._board.getMineCount() or minesMarkedCorrectly == self._board.getMineCount():
             self._state = Game.WON
             
-        if self._state == Game.WON:
-            self._gameEndedTimestamp = int(time.time() * 1000)
-            print("Zwyciestwo")
-            
-        elif self._state == Game.LOST:
-            self._gameEndedTimestamp = int(time.time() * 1000)
-            print("Porazka")
+        self._doActionBasingOnGameState()
             
     def rightClick(self, x, y):
         if x < 0 or y < 0 or x >= self._board.getWidth() or y >= self._board.getHeight():

@@ -7,6 +7,8 @@ from gui.counter import Counter
 
 
 class GameScene(AbstractScene):
+    TILE_SIZE = 16
+    SMILE_BUTTON_SIZE = 26
     GAME_X = 8
     GAME_Y = 8
     GAME_MINES = 10
@@ -31,15 +33,31 @@ class GameScene(AbstractScene):
     def __init__(self, sceneManager):
         super().__init__(sceneManager)
         
-        self.stack = Stack(len(GameScene.SECRET_CODE))
         
-        self.mineCounter = Counter(400, 400, 3)
+        self._board_y = 35
+        
+        windowHeight = self._board_y + GameScene.GAME_Y * GameScene.TILE_SIZE
+        windowWidth = max(GameScene.GAME_Y * GameScene.TILE_SIZE, 176)
+        self._board_x = windowWidth // 2 - (GameScene.GAME_X * GameScene.TILE_SIZE) // 2
+        
+        smileButtonY = 5
+        smileButtonX = windowWidth // 2 - GameScene.SMILE_BUTTON_SIZE // 2
+        self.newGameButton = Button(smileButtonX, smileButtonY, GameScene.SMILE_BUTTON_SIZE, GameScene.SMILE_BUTTON_SIZE, GameScene.playingButtonTexture, self.startNewGame)
+        
+        mineCounterY = 5
+        mineCounterX = (windowWidth // 4) - (Counter.WIDTH * 3) // 2
+        self.mineCounter = Counter(mineCounterX, mineCounterY, 3)
         self.mineCounter.setValue(GameScene.GAME_MINES)
         
-        self.timeCounter = Counter(500, 500, 3)
+        timeCounterY = 5
+        timeCounterX = ((windowWidth // 2) + (windowWidth // 4)) - (Counter.WIDTH * 3) // 2
+        self.timeCounter = Counter(timeCounterX, timeCounterY, 3)
         self.timeCounter.setValue(0)
         
-        self.newGameButton = Button(300, 300, 26, 26, GameScene.playingButtonTexture, self.startNewGame)
+        sceneManager.resizeWindow(windowWidth, windowHeight)
+        
+        self.stack = Stack(len(GameScene.SECRET_CODE))
+        
         self.g = Game(GameScene.GAME_X, GameScene.GAME_Y,GameScene.GAME_MINES)
         
     def draw(self, window):
@@ -63,11 +81,11 @@ class GameScene(AbstractScene):
                 elif field.isOpened():
                     texture = GameScene.openedTextures[field.getMinesNearby()]
                     
-                window.blit(texture, (16 * x, 16 * y))
+                window.blit(texture, (self._board_x + GameScene.TILE_SIZE * x, self._board_y + GameScene.TILE_SIZE * y))
                 if GameScene.CHEATS and field.isMine():
-                    dark = pygame.Surface((16, 16), flags=pygame.SRCALPHA)
+                    dark = pygame.Surface((GameScene.TILE_SIZE, GameScene.TILE_SIZE), flags=pygame.SRCALPHA)
                     dark.fill((50, 50, 50, 0))
-                    window.blit(dark, (16 * x, 16 * y), special_flags=pygame.BLEND_RGBA_SUB)
+                    window.blit(dark, (self._board_x + GameScene.TILE_SIZE * x, self._board_y + GameScene.TILE_SIZE * y), special_flags=pygame.BLEND_RGBA_SUB)
                 
         self.newGameButton.draw(window)
         self.mineCounter.draw(window)
@@ -89,8 +107,8 @@ class GameScene(AbstractScene):
             self.newGameButton.checkClicked(x, y)
             
             if not self.g.isEnd():
-                logicX = x // 16
-                logicY = y // 16
+                logicX = (x - self._board_x) // GameScene.TILE_SIZE
+                logicY = (y - self._board_y) // GameScene.TILE_SIZE
                 
                 self.g.leftClick(logicX, logicY)
                 
@@ -103,8 +121,8 @@ class GameScene(AbstractScene):
         if event.type == pygame.MOUSEBUTTONUP and event.button == 3 and not self.g.isEnd():
             x, y = event.pos
             
-            logicX = x // 16
-            logicY = y // 16
+            logicX = (x - self._board_x) // GameScene.TILE_SIZE
+            logicY = (y - self._board_y) // GameScene.TILE_SIZE
             
             self.g.rightClick(logicX, logicY)
             self.mineCounter.setValue(GameScene.GAME_MINES - self.g.getFlaggedFieldsCount())
