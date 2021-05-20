@@ -11,7 +11,7 @@ class SceneManager:
         self._scene = scene
         
     def draw(self):
-        self._window.fill((127, 127, 127))
+        self._window.fill((192, 192, 192))
         self._scene.draw(self._window)
         
     def handleEvent(self, event):

@@ -15,10 +15,6 @@ class GameScene(AbstractScene):
     MINE_COUNTER_X = 5
     TIME_COUNTER_X = 5
     COUNTER_DIGITS = 3
-    GAME_X = 8
-    GAME_Y = 8
-    GAME_MINES = 10
-    CHEATS = False
     SECRET_CODE = [120, 121, 122, 122, 121] #xyzzy
     
     openedTextures = [pygame.image.load('assets/{}.png'.format(i)) for i in range(9)]
@@ -34,17 +30,19 @@ class GameScene(AbstractScene):
     wonButtonTexture = pygame.image.load('assets/won.png')
     
     def startNewGame(self):
-        self._sceneManager.setScene(GameScene(self._sceneManager))
+        self._sceneManager.setScene(GameScene(self._sceneManager, self._x, self._y, self._mines))
     
-    def __init__(self, sceneManager):
+    def __init__(self, sceneManager, x, y, mines):
         super().__init__(sceneManager)
         
-        
+        self._x = x
+        self._y = y
+        self._mines = mines
         self._board_y = GameScene.START_BOARD_Y
         
-        windowHeight = self._board_y + GameScene.GAME_Y * GameScene.TILE_SIZE
-        windowWidth = max(GameScene.GAME_Y * GameScene.TILE_SIZE, GameScene.MINIMUM_WINDOW_WIDTH)
-        self._board_x = windowWidth // 2 - (GameScene.GAME_X * GameScene.TILE_SIZE) // 2
+        windowHeight = self._board_y + self._y * GameScene.TILE_SIZE
+        windowWidth = max(self._y * GameScene.TILE_SIZE, GameScene.MINIMUM_WINDOW_WIDTH)
+        self._board_x = windowWidth // 2 - (self._x * GameScene.TILE_SIZE) // 2
         
         smileButtonY = GameScene.SMILE_BUTTON_X
         smileButtonX = windowWidth // 2 - GameScene.SMILE_BUTTON_SIZE // 2
@@ -53,7 +51,7 @@ class GameScene(AbstractScene):
         mineCounterY = GameScene.MINE_COUNTER_X
         mineCounterX = (windowWidth // 4) - (Counter.WIDTH * GameScene.COUNTER_DIGITS) // 2
         self.mineCounter = Counter(mineCounterX, mineCounterY, GameScene.COUNTER_DIGITS)
-        self.mineCounter.setValue(GameScene.GAME_MINES)
+        self.mineCounter.setValue(self._mines)
         
         timeCounterY = GameScene.TIME_COUNTER_X
         timeCounterX = ((windowWidth // 2) + (windowWidth // 4)) - (Counter.WIDTH * GameScene.COUNTER_DIGITS) // 2
@@ -64,13 +62,14 @@ class GameScene(AbstractScene):
         
         self.stack = Stack(len(GameScene.SECRET_CODE))
         
-        self.g = Game(GameScene.GAME_X, GameScene.GAME_Y,GameScene.GAME_MINES)
+        self.g = Game(x, y, mines)
+        self._cheats = False
         
     def draw(self, window):
         self.timeCounter.setValue(self.g.getTimePlayingInSeconds())
         
-        for y in range(GameScene.GAME_Y):
-            for x in range(GameScene.GAME_X):
+        for y in range(self._y):
+            for x in range(self._x):
                 field = self.g.getField(x, y)
                 texture = GameScene.closedTexture
                 
@@ -88,7 +87,7 @@ class GameScene(AbstractScene):
                     texture = GameScene.openedTextures[field.getMinesNearby()]
                     
                 window.blit(texture, (self._board_x + GameScene.TILE_SIZE * x, self._board_y + GameScene.TILE_SIZE * y))
-                if GameScene.CHEATS and field.isMine():
+                if self._cheats and field.isMine():
                     dark = pygame.Surface((GameScene.TILE_SIZE, GameScene.TILE_SIZE), flags=pygame.SRCALPHA)
                     dark.fill((50, 50, 50, 0))
                     window.blit(dark, (self._board_x + GameScene.TILE_SIZE * x, self._board_y + GameScene.TILE_SIZE * y), special_flags=pygame.BLEND_RGBA_SUB)
@@ -105,7 +104,7 @@ class GameScene(AbstractScene):
             self.stack.push(event.key)
             
             if self.stack.compare(GameScene.SECRET_CODE):
-                GameScene.CHEATS = True
+                self._cheats = True
             
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             x, y = event.pos
@@ -131,8 +130,8 @@ class GameScene(AbstractScene):
             logicY = (y - self._board_y) // GameScene.TILE_SIZE
             
             self.g.rightClick(logicX, logicY)
-            self.mineCounter.setValue(GameScene.GAME_MINES - self.g.getFlaggedFieldsCount())
-            print(self.g.getFlaggedFieldsCount() - GameScene.GAME_MINES)
+            self.mineCounter.setValue(self._mines - self.g.getFlaggedFieldsCount())
+            print(self.g.getFlaggedFieldsCount() - self._mines)
             
             if self.g.isLost():
                 self.newGameButton.setTexture(GameScene.lostButtonTexture)

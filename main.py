@@ -5,7 +5,7 @@ import pygame
 pygame.init()
 clock = pygame.time.Clock()
 sceneManager = SceneManager(800, 600)
-sceneManager.setScene(GameScene(sceneManager))
+sceneManager.setScene(GameScene(sceneManager, 2, 2, 2))
 
 run = True
 while run:
