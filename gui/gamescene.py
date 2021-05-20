@@ -3,6 +3,7 @@ from logic.stack import Stack
 from logic.game import Game
 from gui.button import Button
 from gui.abstractscene import AbstractScene
+from gui.counter import Counter
 
 
 class GameScene(AbstractScene):
@@ -31,10 +32,19 @@ class GameScene(AbstractScene):
         super().__init__(sceneManager)
         
         self.stack = Stack(len(GameScene.SECRET_CODE))
+        
+        self.mineCounter = Counter(400, 400, 3)
+        self.mineCounter.setValue(GameScene.GAME_MINES)
+        
+        self.timeCounter = Counter(500, 500, 3)
+        self.timeCounter.setValue(0)
+        
         self.newGameButton = Button(300, 300, 26, 26, GameScene.playingButtonTexture, self.startNewGame)
-        self.g = Game(GameScene.GAME_X, GameScene.GAME_Y,GameScene.GAME_MINES)    
+        self.g = Game(GameScene.GAME_X, GameScene.GAME_Y,GameScene.GAME_MINES)
         
     def draw(self, window):
+        self.timeCounter.setValue(self.g.getTimePlayingInSeconds())
+        
         for y in range(GameScene.GAME_Y):
             for x in range(GameScene.GAME_X):
                 field = self.g.getField(x, y)
@@ -60,6 +70,8 @@ class GameScene(AbstractScene):
                     window.blit(dark, (16 * x, 16 * y), special_flags=pygame.BLEND_RGBA_SUB)
                 
         self.newGameButton.draw(window)
+        self.mineCounter.draw(window)
+        self.timeCounter.draw(window)
         
     def handleEvent(self, event):
         if event.type == pygame.QUIT:
@@ -95,6 +107,8 @@ class GameScene(AbstractScene):
             logicY = y // 16
             
             self.g.rightClick(logicX, logicY)
+            self.mineCounter.setValue(GameScene.GAME_MINES - self.g.getFlaggedFieldsCount())
+            print(self.g.getFlaggedFieldsCount() - GameScene.GAME_MINES)
             
             if self.g.isLost():
                 self.newGameButton.setTexture(GameScene.lostButtonTexture)

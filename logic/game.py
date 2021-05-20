@@ -1,3 +1,4 @@
+import time
 from .board import Board
 
 class Game:
@@ -10,6 +11,8 @@ class Game:
         self._board = Board(width, height, mines)
         self._state = Game.WAITING
         self._lastOpenedField = None
+        self._gameStartedTimestamp = 0
+        self._gameEndedTimestamp = 0
         
     def _checkGameState(self):
         if self._state != Game.STARTED:
@@ -35,9 +38,11 @@ class Game:
             self._state = Game.WON
             
         if self._state == Game.WON:
+            self._gameEndedTimestamp = int(time.time() * 1000)
             print("Zwyciestwo")
             
         elif self._state == Game.LOST:
+            self._gameEndedTimestamp = int(time.time() * 1000)
             print("Porazka")
             
     def rightClick(self, x, y):
@@ -56,6 +61,7 @@ class Game:
         if self._state == Game.WAITING:
             self._state = Game.STARTED
             self._board.initBoard(x, y)
+            self._gameStartedTimestamp = int(time.time() * 1000)
             
         elif self._state == Game.WON or self._state == Game.LOST:
             return
@@ -79,3 +85,21 @@ class Game:
         
     def getLastOpenedField(self):
         return self._lastOpenedField
+        
+    def getFlaggedFieldsCount(self):
+        result = 0
+        for y in range(self._board.getHeight()):
+            for x in range(self._board.getWidth()):
+                if self._board.getField(x, y).isFlagged():
+                    result += 1
+                    
+        return result
+        
+    def getTimePlayingInSeconds(self):
+        if self._gameStartedTimestamp == 0:
+            return 0
+            
+        if self._gameEndedTimestamp == 0:
+            return (int(time.time() * 1000) - self._gameStartedTimestamp) // 1000
+            
+        return (self._gameEndedTimestamp - self._gameStartedTimestamp) // 1000

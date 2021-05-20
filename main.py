@@ -3,9 +3,8 @@ from gui.gamescene import GameScene
 import pygame
 
 pygame.init()
-window = pygame.display.set_mode((800, 600))
 clock = pygame.time.Clock()
-sceneManager = SceneManager()
+sceneManager = SceneManager(800, 600)
 sceneManager.setScene(GameScene(sceneManager))
 
 run = True
@@ -14,8 +13,7 @@ while run:
     for event in pygame.event.get():
         run = sceneManager.handleEvent(event)
 
-    window.fill((127, 127, 127))
-    sceneManager.draw(window)
+    sceneManager.draw()
     pygame.display.flip()
 
 pygame.quit()
