@@ -9,6 +9,12 @@ from gui.counter import Counter
 class GameScene(AbstractScene):
     TILE_SIZE = 16
     SMILE_BUTTON_SIZE = 26
+    START_BOARD_Y = 35
+    MINIMUM_WINDOW_WIDTH = 176
+    SMILE_BUTTON_X = 5
+    MINE_COUNTER_X = 5
+    TIME_COUNTER_X = 5
+    COUNTER_DIGITS = 3
     GAME_X = 8
     GAME_Y = 8
     GAME_MINES = 10
@@ -34,24 +40,24 @@ class GameScene(AbstractScene):
         super().__init__(sceneManager)
         
         
-        self._board_y = 35
+        self._board_y = GameScene.START_BOARD_Y
         
         windowHeight = self._board_y + GameScene.GAME_Y * GameScene.TILE_SIZE
-        windowWidth = max(GameScene.GAME_Y * GameScene.TILE_SIZE, 176)
+        windowWidth = max(GameScene.GAME_Y * GameScene.TILE_SIZE, GameScene.MINIMUM_WINDOW_WIDTH)
         self._board_x = windowWidth // 2 - (GameScene.GAME_X * GameScene.TILE_SIZE) // 2
         
-        smileButtonY = 5
+        smileButtonY = GameScene.SMILE_BUTTON_X
         smileButtonX = windowWidth // 2 - GameScene.SMILE_BUTTON_SIZE // 2
         self.newGameButton = Button(smileButtonX, smileButtonY, GameScene.SMILE_BUTTON_SIZE, GameScene.SMILE_BUTTON_SIZE, GameScene.playingButtonTexture, self.startNewGame)
         
-        mineCounterY = 5
-        mineCounterX = (windowWidth // 4) - (Counter.WIDTH * 3) // 2
-        self.mineCounter = Counter(mineCounterX, mineCounterY, 3)
+        mineCounterY = GameScene.MINE_COUNTER_X
+        mineCounterX = (windowWidth // 4) - (Counter.WIDTH * GameScene.COUNTER_DIGITS) // 2
+        self.mineCounter = Counter(mineCounterX, mineCounterY, GameScene.COUNTER_DIGITS)
         self.mineCounter.setValue(GameScene.GAME_MINES)
         
-        timeCounterY = 5
-        timeCounterX = ((windowWidth // 2) + (windowWidth // 4)) - (Counter.WIDTH * 3) // 2
-        self.timeCounter = Counter(timeCounterX, timeCounterY, 3)
+        timeCounterY = GameScene.TIME_COUNTER_X
+        timeCounterX = ((windowWidth // 2) + (windowWidth // 4)) - (Counter.WIDTH * GameScene.COUNTER_DIGITS) // 2
+        self.timeCounter = Counter(timeCounterX, timeCounterY, GameScene.COUNTER_DIGITS)
         self.timeCounter.setValue(0)
         
         sceneManager.resizeWindow(windowWidth, windowHeight)
