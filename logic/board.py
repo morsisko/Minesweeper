@@ -59,8 +59,9 @@ class Board:
         positions = []
         for y in range(self._height):
             for x in range(self._width):
-                if x != excludeX and y != excludeY:
-                    positions.append((x, y))
+                if x == excludeX and y == excludeY:
+                    continue
+                positions.append((x, y))
                     
         random.shuffle(positions)
         
