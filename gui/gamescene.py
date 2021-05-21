@@ -7,6 +7,7 @@ from gui.counter import Counter
 
 
 class GameScene(AbstractScene):
+    """Klasa reprezentująca scenę gry"""
     TILE_SIZE = 16
     SMILE_BUTTON_SIZE = 26
     START_BOARD_Y = 35
@@ -30,6 +31,7 @@ class GameScene(AbstractScene):
     wonButtonTexture = pygame.image.load('assets/won.png')
     
     def startNewGame(self):
+        """Metoda startująca nową grę"""
         from gui.menuscene import MenuScene
         self._sceneManager.setScene(MenuScene(self._sceneManager, self._x, self._y, self._mines))
     
@@ -67,6 +69,7 @@ class GameScene(AbstractScene):
         self._cheats = False
         
     def draw(self, window):
+        """Metoda rysująca scenę"""
         self.timeCounter.setValue(self.g.getTimePlayingInSeconds())
         
         for y in range(self._y):
@@ -98,6 +101,7 @@ class GameScene(AbstractScene):
         self.timeCounter.draw(window)
         
     def handleEvent(self, event):
+        """Metoda obsługująca eventy sceny"""
         if event.type == pygame.QUIT:
             return False
             

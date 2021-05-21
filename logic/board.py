@@ -2,6 +2,7 @@ import random
 from .field import Field
 
 class Board:
+    """Klasa reprezentująca planszę"""
     DIRECTIONS = [(-1, -1,), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
     def __init__(self, width, height, mines):
         self._width = width
@@ -12,21 +13,26 @@ class Board:
         self._createBoard()
         
     def getWidth(self):
+        """Metoda zwracająca szerokość planszy"""
         return self._width
         
     def getHeight(self):
+        """Metoda zwracająca wysokość planszy"""
         return self._height
         
     def getMineCount(self):
+        """Metoda zwracająca liczbę min na planszy"""
         return self._mines
         
     def _createBoard(self):
+        """Metoda tworząca planszę"""
         for y in range(self._height):
             self._board.append([])
             for x in range(self._width):
                 self._board[-1].append(Field(x, y))
                 
     def printBoard(self):
+        """Metoda wypisująca cała planszę w sposób tekstowy, używana do debuggowania"""
         for y in range(self._height + 1):
             for x in range(self._width + 1):
                 if x == 0 and y == 0:
@@ -53,9 +59,11 @@ class Board:
             
                 
     def initBoard(self, excludeX, excludeY):
+        """Metoda inicjalizująca planszę"""
         self._putMines(excludeX, excludeY)
                 
     def _putMines(self, excludeX, excludeY):
+        """Metoda ustawiająca miny na planszy, z pominięciem koordynatów które wskazał użytkownik odkrywając pierwsze pole"""
         positions = []
         for y in range(self._height):
             for x in range(self._width):
@@ -72,6 +80,7 @@ class Board:
         self._countNearbyMines()
             
     def _countNearbyMines(self):
+        """Metoda zliczająca ile min jest w okolicy wszystkich pól na planszy"""
         for y in range(self._height):
             for x in range(self._width):
                 currentCount = 0
@@ -88,6 +97,7 @@ class Board:
                 self._board[y][x].setMinesNearby(currentCount)
                 
     def openField(self, x, y):
+        """Metoda otwierająca pole i sąsiadów pola o zadanych koordynatach, wywoływana rekurencyjnie"""
         field = self.getField(x, y)
         
         if field.isOpened():
@@ -116,4 +126,5 @@ class Board:
             self.openField(newX, newY)
             
     def getField(self, x, y):
+        """Metoda zwracająca Field o zadanych koordynatach""" 
         return self._board[y][x]

@@ -6,6 +6,7 @@ from gui.gamescene import GameScene
 from gui.counter import Counter
 
 class MenuScene(AbstractScene):
+    """Klasa reprezentująca scenę menu głównego"""
     WIDTH = 176
     HEIGHT = 230
     COUNTER_DIGITS = 3
@@ -91,20 +92,25 @@ class MenuScene(AbstractScene):
         self._buttons = [self.decXArrow, self.incXArrow, self.decYArrow, self.incYArrow, self.mineDecArrow, self.mineIncArrow, self.playButton]
         
     def _setX(self, x):
+        """Metoda ustawiająca potencjalną szerokość planszy"""
         self._x = max(0, x)
         
     def _setY(self, y):
+        """Metoda ustawiająca potencjalną wysokość planszy"""
         self._y = max(0, y)
         
     def _setMines(self, mines):
+        """Metoda ustawiająca potencjalną liczbę min na planszy"""
         self._mines = max(0, mines)
         
     def _setErrorText(self, text):
+        """Metoda ustawiająca tekst błędu"""
         self._errorText = self._font.render(text, True, MenuScene.RED)
         _, __, textX, textY = self._errorText.get_rect()
         self._errorTextX = (MenuScene.WIDTH // 2) - textX // 2
         
     def _startGame(self):
+        """Metoda startująca nową grę"""
         try:
             gameScene = GameScene(self._sceneManager, self._x, self._y, self._mines)
             self._sceneManager.setScene(gameScene)
@@ -118,6 +124,7 @@ class MenuScene(AbstractScene):
             self._setErrorText("Za dużo min")
         
     def draw(self, window):
+        """Metoda rysująca scenę"""
         self.xCounter.setValue(self._x)
         self.xCounter.draw(window)
         
@@ -138,6 +145,7 @@ class MenuScene(AbstractScene):
             window.blit(self._errorText, (self._errorTextX, self._errorTextY))
         
     def handleEvent(self, event):
+        """Metoda obsługująca eventy sceny"""
         if event.type == pygame.QUIT:
             return False
             

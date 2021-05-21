@@ -1,5 +1,6 @@
 import pygame
 class Counter:
+    """Klasa reprezentująca graficzny licznik w programie"""
     WIDTH = 13
     HEIGHT = 26
     TEXTURES = [pygame.image.load('assets/counter_{}.png'.format(i)) for i in range(10)]
@@ -10,9 +11,11 @@ class Counter:
         self._digits = digits
         
     def setValue(self, value):
+        """Metoda ustawiająca wartość licznika"""
         self._value = value
     
     def draw(self, window):
+        """Metoda rysująca licznik"""
         valueToDraw = min(10 ** self._digits - 1, self._value)
         valueToDraw = max(0, self._value)
         
