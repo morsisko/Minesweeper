@@ -1,4 +1,5 @@
 import pygame
+from logic.exceptions import MinesweeperException, BoardTooSmallException, BoardTooBigException, TooManyMinesException, TooLittleMinesException
 from gui.button import Button
 from gui.abstractscene import AbstractScene
 from gui.gamescene import GameScene
@@ -6,9 +7,10 @@ from gui.counter import Counter
 
 class MenuScene(AbstractScene):
     WIDTH = 176
-    HEIGHT = 200
+    HEIGHT = 230
     COUNTER_DIGITS = 3
     BLACK = (0, 0, 0)
+    RED = (230, 0, 0)
     ARROW_WIDTH = 60
     ARROW_HEIGHT = 24
     
@@ -37,10 +39,13 @@ class MenuScene(AbstractScene):
         self._mineTextX = (MenuScene.WIDTH // 2) - textX // 2
         self._mineTextY = 116
         
+        self._errorText = None
+        self._errorTextY = 170
+        
         self._playText = self._font.render('Kliknij aby zagrać!', True, MenuScene.BLACK)
         _, __, textX, textY = self._playText.get_rect()
         self._playTextX = (MenuScene.WIDTH // 2) - textX // 2
-        self._playTextY = 166
+        self._playTextY = 196
         self.playButton = Button(self._playTextX, self._playTextY, textX, textY, self._playText, self._startGame)
         
         xCounter_y = 30
@@ -94,8 +99,23 @@ class MenuScene(AbstractScene):
     def _setMines(self, mines):
         self._mines = max(0, mines)
         
+    def _setErrorText(self, text):
+        self._errorText = self._font.render(text, True, MenuScene.RED)
+        _, __, textX, textY = self._errorText.get_rect()
+        self._errorTextX = (MenuScene.WIDTH // 2) - textX // 2
+        
     def _startGame(self):
-        self._sceneManager.setScene(GameScene(self._sceneManager, self._x, self._y, self._mines))
+        try:
+            gameScene = GameScene(self._sceneManager, self._x, self._y, self._mines)
+            self._sceneManager.setScene(gameScene)
+        except BoardTooSmallException:
+            self._setErrorText("Za małe wymiary")
+        except BoardTooBigException:
+            self._setErrorText("Za duże wymiary")
+        except TooLittleMinesException:
+            self._setErrorText("Za mało min")
+        except TooManyMinesException:
+            self._setErrorText("Za dużo min")
         
     def draw(self, window):
         self.xCounter.setValue(self._x)
@@ -113,6 +133,9 @@ class MenuScene(AbstractScene):
         window.blit(self._xText, (self._xTextX, self._xTextY))
         window.blit(self._yText, (self._yTextX, self._yTextY))
         window.blit(self._mineText, (self._mineTextX, self._mineTextY))
+        
+        if self._errorText:
+            window.blit(self._errorText, (self._errorTextX, self._errorTextY))
         
     def handleEvent(self, event):
         if event.type == pygame.QUIT:

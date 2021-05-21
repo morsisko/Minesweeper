@@ -40,6 +40,7 @@ class GameScene(AbstractScene):
         self._y = y
         self._mines = mines
         self._board_y = GameScene.START_BOARD_Y
+        self.g = Game(x, y, mines)
         
         windowHeight = self._board_y + self._y * GameScene.TILE_SIZE
         windowWidth = max(self._y * GameScene.TILE_SIZE, GameScene.MINIMUM_WINDOW_WIDTH)
@@ -63,7 +64,6 @@ class GameScene(AbstractScene):
         
         self.stack = Stack(len(GameScene.SECRET_CODE))
         
-        self.g = Game(x, y, mines)
         self._cheats = False
         
     def draw(self, window):
@@ -132,7 +132,6 @@ class GameScene(AbstractScene):
             
             self.g.rightClick(logicX, logicY)
             self.mineCounter.setValue(self._mines - self.g.getFlaggedFieldsCount())
-            print(self.g.getFlaggedFieldsCount() - self._mines)
             
             if self.g.isLost():
                 self.newGameButton.setTexture(GameScene.lostButtonTexture)

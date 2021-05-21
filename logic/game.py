@@ -1,4 +1,5 @@
 import time
+from logic.exceptions import MinesweeperException, BoardTooSmallException, BoardTooBigException, TooManyMinesException, TooLittleMinesException
 from .board import Board
 
 class Game:
@@ -6,8 +7,22 @@ class Game:
     STARTED = 0
     LOST = 1
     WON = 2
+    MAX_BOARD_SIZE = 15
+    MIN_BOARD_SIZE = 2
     
     def __init__(self, width, height, mines):
+        if width < Game.MIN_BOARD_SIZE or height < Game.MIN_BOARD_SIZE:
+            raise BoardTooSmallException
+            
+        if width > Game.MAX_BOARD_SIZE or height > Game.MAX_BOARD_SIZE:
+            raise BoardTooBigException
+            
+        if mines < 0:
+            raise TooLittleMinesException
+            
+        if mines >= (width * height):
+            raise TooManyMinesException
+    
         self._board = Board(width, height, mines)
         self._state = Game.WAITING
         self._lastOpenedField = None
