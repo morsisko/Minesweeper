@@ -38,11 +38,11 @@ class Game:
         """Metoda wykonująca akcję bazując na aktualnym stanie gry"""
         if self._state == Game.WON:
             self._gameEndedTimestamp = int(time.time() * 1000)
-            print("Zwyciestwo")
+            #print("Zwyciestwo")
             
         elif self._state == Game.LOST:
             self._gameEndedTimestamp = int(time.time() * 1000)
-            print("Porazka")
+            #print("Porazka")
         
     def _checkGameState(self):
         """Metoda sprawdzająca czy gra została przegrana, wygrana, czy nadal może być kontynuowana"""
@@ -124,6 +124,17 @@ class Game:
         for y in range(self._board.getHeight()):
             for x in range(self._board.getWidth()):
                 if self._board.getField(x, y).isFlagged():
+                    result += 1
+                    
+        return result
+        
+        
+    def getOpenedFieldsCount(self):
+        """Metoda zwracająca liczbę otwartych pól"""
+        result = 0
+        for y in range(self._board.getHeight()):
+            for x in range(self._board.getWidth()):
+                if self._board.getField(x, y).isOpened():
                     result += 1
                     
         return result
