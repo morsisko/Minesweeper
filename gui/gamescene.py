@@ -1,5 +1,4 @@
 import pygame
-from logic.stack import Stack
 from logic.game import Game
 from gui.button import Button
 from gui.abstractscene import AbstractScene
@@ -16,7 +15,6 @@ class GameScene(AbstractScene):
     MINE_COUNTER_X = 5
     TIME_COUNTER_X = 5
     COUNTER_DIGITS = 3
-    SECRET_CODE = [120, 121, 122, 122, 121] #xyzzy
     
     openedTextures = [pygame.image.load('assets/{}.png'.format(i)) for i in range(9)]
     closedTexture = pygame.image.load('assets/closed.png')
@@ -64,10 +62,6 @@ class GameScene(AbstractScene):
         
         sceneManager.resizeWindow(windowWidth, windowHeight)
         
-        self.stack = Stack(len(GameScene.SECRET_CODE))
-        
-        self._cheats = False
-        
     def draw(self, window):
         """Metoda rysująca scenę"""
         self.timeCounter.setValue(self.g.getTimePlayingInSeconds())
@@ -91,7 +85,7 @@ class GameScene(AbstractScene):
                     texture = GameScene.openedTextures[field.getMinesNearby()]
                     
                 window.blit(texture, (self._board_x + GameScene.TILE_SIZE * x, self._board_y + GameScene.TILE_SIZE * y))
-                if self._cheats and field.isMine():
+                if self.g.isSecretCodeActivated() and field.isMine():
                     dark = pygame.Surface((GameScene.TILE_SIZE, GameScene.TILE_SIZE), flags=pygame.SRCALPHA)
                     dark.fill((50, 50, 50, 0))
                     window.blit(dark, (self._board_x + GameScene.TILE_SIZE * x, self._board_y + GameScene.TILE_SIZE * y), special_flags=pygame.BLEND_RGBA_SUB)
@@ -106,10 +100,7 @@ class GameScene(AbstractScene):
             return False
             
         if event.type == pygame.KEYUP:
-            self.stack.push(event.key)
-            
-            if self.stack.compare(GameScene.SECRET_CODE):
-                self._cheats = True
+            self.g.addKeypress(event.key)
             
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             x, y = event.pos

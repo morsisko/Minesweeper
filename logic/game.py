@@ -1,6 +1,7 @@
 import time
 from logic.exceptions import MinesweeperException, BoardTooSmallException, BoardTooBigException, TooManyMinesException, TooLittleMinesException
-from .board import Board
+from logic.board import Board
+from logic.stack import Stack
 
 class Game:
     """Klasa reprezentująca stan aktualnej gry"""
@@ -10,6 +11,7 @@ class Game:
     WON = 2
     MAX_BOARD_SIZE = 15
     MIN_BOARD_SIZE = 2
+    SECRET_CODE = [120, 121, 122, 122, 121] #xyzzy
     
     def __init__(self, width, height, mines):
         if width < Game.MIN_BOARD_SIZE or height < Game.MIN_BOARD_SIZE:
@@ -29,6 +31,8 @@ class Game:
         self._lastOpenedField = None
         self._gameStartedTimestamp = 0
         self._gameEndedTimestamp = 0
+        self._stack = Stack(len(Game.SECRET_CODE))
+        self._cheats = False
         
     def _doActionBasingOnGameState(self):
         """Metoda wykonująca akcję bazując na aktualnym stanie gry"""
@@ -133,3 +137,14 @@ class Game:
             return (int(time.time() * 1000) - self._gameStartedTimestamp) // 1000
             
         return (self._gameEndedTimestamp - self._gameStartedTimestamp) // 1000
+        
+    def addKeypress(self, keycode):
+        """Metoda dodająca wciśnięty klawisz do stosu wciśniętych klawiszy, oraz sprawdzająca, czy została wciśnięta sekretna kombinacja klawiszy."""
+        self._stack.push(keycode)
+        
+        if self._stack.compare(Game.SECRET_CODE):
+            self._cheats = True
+            
+    def isSecretCodeActivated(self):
+        """Metoda sprawdzająca, czy został aktywowany tajny kod"""
+        return self._cheats
